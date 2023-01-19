@@ -91,7 +91,7 @@ class Board:
         self.boatCanvas.bind("<Button-2>", self.clickToRemove)
         self.boatCanvas.bind("<Button-3>", self.clickToRotate)
         self.boatCanvas.bind("<Motion>", self.preview)
-        SendBoatLocationButton = tk.Button(self.window, text="Send your boats location", command= lambda: self.sendFunc(self.boatCase))
+        SendBoatLocationButton = tk.Button(self.window, text="Send your boats location", command= lambda: self.sendFunc(self.boats))
         SendBoatLocationButton.pack(side=tk.BOTTOM)
         self.missileCanvas = tk.Canvas(self.window,width=self.caseSize*self.boardSize,height=self.caseSize*self.boardSize)
         self.missileCanvas.pack(side=tk.LEFT)
