@@ -6,11 +6,11 @@ class gameSex_sixenlatin_Mecanic_bytesManager:
     dir: Vector2d = Vector2d(0, 1)
     boats: list[Boat] = []
 
-    def PreviewBoatLocation(self, board, pos: Vector2d, sizeIndex: int) -> list[Vector2d]:
+    def PreviewBoatLocation(self, board, pos: Vector2d) -> list[Vector2d]:
         temp = pos
         liste = []
         dir = self.dir
-        for i in range(self.sizes[sizeIndex]):
+        for i in range(self.getMaxBoatSizeToPlace()):
             if (temp.x >= board.boardSize or temp.y >= board.boardSize or temp.x < 0 or temp.y < 0):
                 dir = Vector2d(0, 0) - dir
                 temp = pos + dir
@@ -20,6 +20,15 @@ class gameSex_sixenlatin_Mecanic_bytesManager:
             temp += dir
 
         return liste
+    
+    def getMaxBoatSizeToPlace(self):
+        return max(self.sizes)
+
+    def addSize(self, newSize: int):
+        self.sizes.append(newSize)
+
+    def removeSize(self, sizeToRemove):
+        self.sizes.remove(sizeToRemove)
 
     def Rotate(self):
         if self.dir.y == 1:

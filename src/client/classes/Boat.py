@@ -11,6 +11,9 @@ class Boat :
     def __repr__(self) -> str:
         return f"{self.__cells}"
 
+    def getLength(self):
+        return len(self.__cells)
+
     def getCells(self):
         return self.__cells
 

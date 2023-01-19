@@ -8,7 +8,7 @@ from classes.gamemachinemanagercontrollersextoyinputreceiver_itCanVibrateOfCours
 class Board:
 
     window, boatCanvas, missileCanvas, game = None, None, None, None
-    sizeIndex: int = 0
+    oldPreview = None
     tiles: list[list[int]]
  
     def __init__(self, bSize, cSize, sendFunc: str, killFunc, sendTest):
@@ -28,7 +28,7 @@ class Board:
         caseX = px//self.caseSize
         caseY = py//self.caseSize
         pos = Vector2d(caseX, caseY)
-        boat = self.game.PreviewBoatLocation(self, pos, self.sizeIndex)
+        boat = self.game.PreviewBoatLocation(self, pos)
         newBoat = Boat(boat)
 
         boatOverlapp = False
@@ -42,11 +42,13 @@ class Board:
         if (not boatOverlapp or len(self.boats) == 0):
             print(newBoat," added")
             self.boats.append(newBoat)
+            self.game.removeSize(self.game.getMaxBoatSizeToPlace())
             for b in newBoat.getCells():
                 self.boatsCases.append(self.boatCanvas.create_rectangle(b.x*self.caseSize,b.y*self.caseSize,b.x*self.caseSize+self.caseSize,b.y*self.caseSize+self.caseSize,fill="red"))
-            self.sizeIndex += 1
-            if self.sizeIndex == len(self.game.sizes):
+            if not self.game.sizes:
+                print("every boats are placed")
                 self.boatCanvas.bind("<Button-1>", self._pass)
+                self.boatCanvas.bind("<Button-2>", self._pass)
                 self.boatCanvas.bind("<Button-3>", self._pass)
                 self.boatCanvas.bind("<Motion>", self._pass)
         else:
@@ -60,8 +62,15 @@ class Board:
         py = event.y
         caseX = px//self.caseSize
         caseY = py//self.caseSize
-        for b in self.boatsCases:
-            print(b)
+        for b in self.boats:
+            for B in b.getCells():
+                if (caseX,caseY) == B.getTupple():
+                    self.boats.remove(b)
+                    self.game.addSize(b.getLength())
+                    print(b, "deleted")
+                    self.drawBoard()
+                    self.preview(event)
+                    return
             
         # self.boatCanvas.create_rectangle(caseX*self.caseSize, caseY*self.caseSize, caseX*self.caseSize+self.caseSize, caseY*self.caseSize+self.caseSize,fill=self.colors[(caseX%2+caseY%2)%2])
         # case = chr(65+caseX)+str(caseY+1)
@@ -76,8 +85,8 @@ class Board:
         self.drawBoard()
 
         pos = Vector2d(event.x // self.caseSize, event.y // self.caseSize)
-        boat = self.game.PreviewBoatLocation(self, pos, self.sizeIndex)
-
+        boat = self.game.PreviewBoatLocation(self, pos)
+        
         for b in boat:
             self.boatCanvas.create_rectangle(b.x * self.caseSize, b.y * self.caseSize, (b.x + 1) * self.caseSize, (b.y + 1) * self.caseSize, fill="green")
 
@@ -91,7 +100,7 @@ class Board:
         self.boatCanvas.bind("<Button-2>", self.clickToRemove)
         self.boatCanvas.bind("<Button-3>", self.clickToRotate)
         self.boatCanvas.bind("<Motion>", self.preview)
-        SendBoatLocationButton = tk.Button(self.window, text="Send your boats location", command= lambda: self.sendFunc(self.boats))
+        SendBoatLocationButton = tk.Button(self.window, text="Send your boats location", command= lambda: self.sendFunc(self.boats) if not self.game.sizes else self._pass("you momma"))
         SendBoatLocationButton.pack(side=tk.BOTTOM)
         self.missileCanvas = tk.Canvas(self.window,width=self.caseSize*self.boardSize,height=self.caseSize*self.boardSize)
         self.missileCanvas.pack(side=tk.LEFT)

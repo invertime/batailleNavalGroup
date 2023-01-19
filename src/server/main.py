@@ -8,7 +8,7 @@ server = Server(port)
 
 server.connect()
 
-servers = []
+clients = []
 
 connectedClient = 0
 
@@ -18,7 +18,7 @@ while True:
         connectedClient += 1
         print(connectedClient)
         serverThread = threading.Thread(target=connectionHandler, args=(conn, addr))
-        servers.append(serverThread)
+        clients.append(serverThread)
         serverThread.start()
     else:
         conn, addr = server.accept()
