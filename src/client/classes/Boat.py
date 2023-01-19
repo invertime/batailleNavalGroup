@@ -1,4 +1,3 @@
-from typing import NewType
 from classes.vector2d import Vector2d
 
 class Boat :

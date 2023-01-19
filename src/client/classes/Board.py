@@ -30,7 +30,16 @@ class Board:
         pos = Vector2d(caseX, caseY)
         boat = self.game.PreviewBoatLocation(self, pos, self.sizeIndex)
         newBoat = Boat(boat)
-        if (set(boat).intersection(set(self.boats)) == []):
+
+        boatOverlapp = False
+
+        for i in self.boats:
+            for j in boat:
+                if j in i.getCells():
+                    boatOverlapp = True
+
+
+        if (not boatOverlapp or len(self.boats) == 0):
             print(newBoat," added")
             self.boats.append(newBoat)
             for b in newBoat.getCells():
@@ -40,11 +49,8 @@ class Board:
                 self.boatCanvas.bind("<Button-1>", self._pass)
                 self.boatCanvas.bind("<Button-3>", self._pass)
                 self.boatCanvas.bind("<Motion>", self._pass)
-            
-        # case = chr(65+caseX)+str(caseY+1)
-        # if (case not in self.boatCase):
-        #     print(case,"added")
-        #     self.boatCase.append(case)
+        else:
+            print("There is a boat here")
 
     def _pass(self, e):
         pass
@@ -93,7 +99,13 @@ class Board:
         self.window.mainloop()
 
     def drawBoard(self):
-        boatTiles = [[B.getTupple() for B in b.getCells()] for b in self.boats]
+        boatTiles = []
+
+        for b in self.boats:
+            for B in b.getCells():
+                boatTiles.append(B.getTupple())
+
+
         for lign in range(self.boardSize):
             self.tiles.append([])
             for row in range(self.boardSize):
@@ -103,7 +115,12 @@ class Board:
                 self.tiles[lign].append(self.boatCanvas.create_rectangle(x,y,x+self.caseSize,y+self.caseSize,fill=color))
                     
     def initBoard(self):
-        boatTiles = [[B.getTupple() for B in b.getCells()] for b in self.boats]
+        boatTiles = []
+
+        for b in self.boats:
+            for B in b.getCells():
+                boatTiles.append(B.getTupple())
+
         for lign in range(self.boardSize):
             self.tiles.append([])
             for row in range(self.boardSize):

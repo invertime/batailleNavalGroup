@@ -1,5 +1,3 @@
-
-
 class Vector2d:
     def __init__(self, x, y):
        self.x, self.y = x, y
@@ -15,6 +13,9 @@ class Vector2d:
 
     def __repr__(self) -> str:
         return f"({self.x},{self.y})"
+
+    def __eq__(self, other) -> bool:
+        return self.getTupple() == other.getTupple()
 
     def getTupple(self):
         return (self.x,self.y)
