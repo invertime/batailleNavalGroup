@@ -1,4 +1,4 @@
-from classes.vector2d import Vector2d
+from classes.Vector2d import Vector2d
 
 class Boat :
     __cells: list[Vector2d]

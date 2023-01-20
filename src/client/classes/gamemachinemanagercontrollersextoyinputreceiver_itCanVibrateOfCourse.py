@@ -1,4 +1,4 @@
-from classes.vector2d import Vector2d
+from classes.Vector2d import Vector2d
 from classes.Boat import Boat
 
 class gameSex_sixenlatin_Mecanic_bytesManager:
@@ -39,3 +39,7 @@ class gameSex_sixenlatin_Mecanic_bytesManager:
             self.dir = Vector2d(-1, 0)
         else:
             self.dir = Vector2d(0, 1)
+
+class gameSexMechanicV2:
+    def TryShootAt(self, pos:Vector2d) -> bool:
+        return False

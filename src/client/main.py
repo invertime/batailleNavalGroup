@@ -1,5 +1,5 @@
 import threading
-from classes.Board import Board
+from classes.Window import Window
 from classes.Client import Client
 
 
@@ -10,7 +10,7 @@ caseSize = 75
 
 client = Client(host,port)
 
-board = Board(boardSize,caseSize,client.sendBoatLocation,client.sendKill, client.sendTest)
+board = Window(boardSize,caseSize,client.sendBoatLocation,client.sendKill, client.sendTest)
 
 client.create()
 board.create()
