@@ -56,7 +56,7 @@ class Window:
 
     def switchToShootHandler(self):
         shootModeEnabled = self.mainGameMechanics.switchToShoot()
-        if shootModeEnabled:
+        if shootModeEnabled and self.placeBoard.everyBoatsPlaced:
             self.placeBoard.greyAll()
             self.shootBoard.create()
 
