@@ -1,4 +1,5 @@
-from classes.server import *
+from classes.server import Server
+from classes.Client import Client
 import threading
 import sys
 
@@ -13,17 +14,15 @@ clients = []
 connectedClient = 0
 
 while True:
-    if connectedClient < 2:
+    if connectedClient < 100000:
         conn, addr = server.accept()
         connectedClient += 1
         print(connectedClient)
-        serverThread = threading.Thread(target=connectionHandler, args=(conn, addr))
+        client = Client([])
+        serverThread = threading.Thread(target=Server.connectionHandler, args=(conn, addr, client))
         clients.append(serverThread)
         serverThread.start()
     else:
         conn, addr = server.accept()
-        serverThread = threading.Thread(target=kickHandler, args=(conn,addr))
+        serverThread = threading.Thread(targets=Server.kickHandler, args=(conn,addr))
         serverThread.start()
-
-
-

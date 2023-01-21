@@ -12,16 +12,13 @@ class ShootBoard:
     oldPreview: Vector2d
     tiles: list[list[int]]
  
-    def __init__(self, canvas, game, bSize, cSize, sendFunc, killFunc, sendTest):
+    def __init__(self, canvas, game, bSize, cSize):
         self.canvas = canvas
         self.game = game
         self.boardSize: int = bSize
         self.caseSize: int = cSize
         self.tiles = []
         self.colors: list[str] = ["white","black"]
-        self.sendFunc: function[list[str], None] = sendFunc
-        self.killFunc: function[None] = killFunc
-        self.sendTest: function[socket.socket] = sendTest
 
     def canvasToBoard(self, pos: tuple[int, int]) -> tuple[int, int]:
         return pos[0] //self.caseSize, pos[1] //self.caseSize
@@ -43,10 +40,11 @@ class ShootBoard:
     def clickToShoot(self, event):
         caseX, caseY = self.canvasToBoard((event.x, event.y))
 
-        if self.game.TryShootAt(Vector2d(caseX, caseY)):
-            self.hitTiles.append(Vector2d(caseX, caseY))
-        else:
-            self.waterTiles.append(Vector2d(caseX, caseY))
+        if not Vector2d(caseX, caseY) in (self.hitTiles + self.waterTiles):
+            if self.game.TryShootAt(Vector2d(caseX, caseY)):
+                self.hitTiles.append(Vector2d(caseX, caseY))
+            else:
+                self.waterTiles.append(Vector2d(caseX, caseY))
 
         self.drawBoard()
 

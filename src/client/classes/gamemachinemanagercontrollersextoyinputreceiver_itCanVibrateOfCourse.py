@@ -1,3 +1,4 @@
+import random
 from classes.Vector2d import Vector2d
 from classes.Boat import Boat
 
@@ -41,8 +42,11 @@ class gameSex_sixenlatin_Mecanic_bytesManager:
             self.dir = Vector2d(0, 1)
 
 class gameSexMechanicV2:
+    def __init__(self, shootCommand) -> None:
+        self.sendShootCommand: function[tuple[int, int], bool] = shootCommand
+
     def TryShootAt(self, pos:Vector2d) -> bool:
-        return False
+        return self.sendShootCommand(pos.getTupple())
 
 class MainGameMechanic:
     __shootModeEnable = False

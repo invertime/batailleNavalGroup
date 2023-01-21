@@ -1,4 +1,5 @@
 import socket
+from classes.Client import Client
 
 class Server:
     def __init__(self, port, host=""):
@@ -15,27 +16,28 @@ class Server:
     def accept(self):    
         self.conn, self.addr = self.sock.accept()
         return (self.conn, self.addr)
-        
 
+    def connectionHandler(conn, addr, client: Client):    
+        data = ""
+        print(f"Connected by {addr}")
+        while True:
+            data: str = conn.recv(1024).decode("utf8")
+            if not data:
+                break
 
-def connectionHandler(conn, addr):    
-    data = ""
-    print(f"Connected by {addr}")
-    while True:
-        data = conn.recv(1024)
-        if not data:
-            break
-        print(data)
-        if(data==b"killYourself69"):
-            conn.sendall(b"killed")
-            print(conn)
-            print(addr)
-            exit()
-        elif(data==b"test"):
-            conn.sendall(b"test yes")
-        else:
-            conn.sendall(data)
+            command = int(data[0])
+            parsed = data[2:-1]
 
-def kickHandler(conn, addr):
-    print(addr, "kicked")
-    conn.sendall(b"noConnect")
+            if command == 0:
+                print("Boats received: " + parsed)
+                client.boats  += list[list[tuple[int, int]]](parsed)
+                conn.sendall(bytes(data, "utf8"))
+            elif command == 1:
+                print("user shot at ", data[1:])
+                conn.sendall(b"1" if tuple[int, int](parsed) in client.boats else b"0")
+            else:
+                conn.sendall(b"error processing data")
+
+    def kickHandler(conn, addr):
+        print(addr, "kicked")
+        conn.sendall(b"noConnect")

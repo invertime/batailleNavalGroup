@@ -8,10 +8,9 @@ port = 6969
 boardSize = 10
 caseSize = 75
 
-client = Client(host,port)
+client = Client(host, port)
 
-board = Window(boardSize,caseSize,client.sendBoatLocation,client.sendKill, client.sendTest)
+board = Window(boardSize, caseSize)
 
 client.create()
-board.create()
-
+board.create(client.sendBoatLocation, client.sendMissile)

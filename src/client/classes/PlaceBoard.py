@@ -12,7 +12,7 @@ class PlaceBoard:
     tiles: list[list[int]] = []
     everyBoatsPlaced = False
  
-    def __init__(self, canvas, game, bSize, cSize, sendFunc: str, killFunc, sendTest):
+    def __init__(self, canvas, game, bSize, cSize, sendFunc):
         self.canvas = canvas
         self.game = game
         self.boardSize: int = bSize
@@ -22,8 +22,6 @@ class PlaceBoard:
         self.boats: list[Boat] = []
         self.colors: list[str] = ["white","black"]
         self.sendFunc: function[list[str], None] = sendFunc
-        self.killFunc: function[None] = killFunc
-        self.sendTest: function[socket.socket] = sendTest
     
     def clickToPlace(self, event):
         caseX, caseY = self.canvasToBoard((event.x, event.y))
