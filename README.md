@@ -1,3 +1,3 @@
 # Bataille Naval Group
 
-Une bataille navale basé sur python et tkinter
+Une bataille navale basée sur python et tkinter
