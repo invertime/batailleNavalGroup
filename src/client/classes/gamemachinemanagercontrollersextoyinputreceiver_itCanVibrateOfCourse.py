@@ -43,3 +43,9 @@ class gameSex_sixenlatin_Mecanic_bytesManager:
 class gameSexMechanicV2:
     def TryShootAt(self, pos:Vector2d) -> bool:
         return False
+
+class MainGameMechanic:
+    __shootModeEnable = False
+    def switchToShoot(self):
+        self.__shootModeEnable = True
+        return self.__shootModeEnable

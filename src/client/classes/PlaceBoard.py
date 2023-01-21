@@ -2,7 +2,7 @@ import tkinter as tk
 import socket
 from classes.Boat import Boat
 from classes.Vector2d import Vector2d
-from classes.gamemachinemanagercontrollersextoyinputreceiver_itCanVibrateOfCourse import gameSex_sixenlatin_Mecanic_bytesManager
+from classes.gamemachinemanagercontrollersextoyinputreceiver_itCanVibrateOfCourse import gameSex_sixenlatin_Mecanic_bytesManager, MainGameMechanic
 
 
 class PlaceBoard:
@@ -10,6 +10,7 @@ class PlaceBoard:
     canvas: tk.Canvas = None
     oldPreview: list[Vector2d] = []
     tiles: list[list[int]] = []
+    everyBoatsPlaced = False
  
     def __init__(self, canvas, game, bSize, cSize, sendFunc: str, killFunc, sendTest):
         self.canvas = canvas
@@ -44,13 +45,17 @@ class PlaceBoard:
             self.boats.append(newBoat)
             self.game.removeSize(self.game.getMaxBoatSizeToPlace())
             for b in newBoat.getCells():
-                self.boatsCases.append(self.canvas.create_rectangle(b.x*self.caseSize,b.y*self.caseSize,b.x*self.caseSize+self.caseSize,b.y*self.caseSize+self.caseSize,fill="red"))
+                x,y = b.getTupple()
+                self.canvas.itemconfig(self.tiles[y][x], fill="red")
             if not self.game.sizes:
                 print("every boats are placed")
+                self.everyBoatsPlaced = True
                 self.canvas.bind("<Button-1>", self._pass)
                 self.canvas.bind("<Button-2>", self._pass)
                 self.canvas.bind("<Button-3>", self._pass)
                 self.canvas.bind("<Motion>", self._pass)
+            else:
+                self.preview(event)
         else:
             print("There is a boat here")
 
@@ -84,9 +89,20 @@ class PlaceBoard:
         boat = self.game.PreviewBoatLocation(self, pos)
         
         for b in boat:
-            self.canvas.itemconfig(self.tiles[b.y][b.x], fill="green")
+            if b.x < self.boardSize and b.y < self.boardSize:
+                self.canvas.itemconfig(self.tiles[b.y][b.x], fill="green")
 
         self.oldPreview = boat
+
+    def greyAll(self):
+        if self.everyBoatsPlaced:
+            print("Grayed")
+            for y in range(len(self.tiles)):
+                for x in range(len(self.tiles[y])):
+                    self.canvas.itemconfig(self.tiles[y][x], fill="grey")
+        else:
+            print("You didn't placed every boats")
+
 
     def create(self):
         self.canvas.bind("<Button-1>", self.clickToPlace)

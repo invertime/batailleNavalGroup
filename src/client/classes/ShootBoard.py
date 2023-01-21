@@ -2,7 +2,7 @@ import tkinter as tk
 import socket
 from classes.Boat import Boat
 from classes.Vector2d import Vector2d
-from classes.gamemachinemanagercontrollersextoyinputreceiver_itCanVibrateOfCourse import gameSexMechanicV2
+from classes.gamemachinemanagercontrollersextoyinputreceiver_itCanVibrateOfCourse import gameSexMechanicV2, MainGameMechanic
 
 class ShootBoard:
     canvas: tk.Canvas = None
@@ -30,7 +30,7 @@ class ShootBoard:
         self.drawBoard()
 
         x, y = self.canvasToBoard((event.x, event.y))
-        if not (x, y) in (self.hitTiles + self.waterTiles):
+        if not Vector2d(x, y) in (self.hitTiles + self.waterTiles) and x < self.boardSize and y < self.boardSize:
             self.canvas.itemconfig(self.tiles[y][x], fill="green")
 
         self.oldPreview = Vector2d(event.x // self.caseSize, event.y // self.caseSize)
@@ -38,11 +38,6 @@ class ShootBoard:
     def create(self):
         self.canvas.bind("<Button-1>", self.clickToShoot)
         self.canvas.bind("<Motion>", self.preview)
-        
-        # self.missileCanvas = tk.Canvas(self.window,width=self.caseSize*self.boardSize,height=self.caseSize*self.boardSize)
-        # self.missileCanvas.pack(side=tk.LEFT)
-        # self.missileCanvas.create_rectangle(0,0,self.caseSize*self.boardSize,self.caseSize*self.boardSize, fill="grey")
-        self.initBoard()
         self.drawBoard()
 
     def clickToShoot(self, event):
@@ -58,7 +53,7 @@ class ShootBoard:
     def drawBoard(self):
         for lign in range(self.boardSize):
             for row in range(self.boardSize):
-                color = "red" if (row, lign) in self.hitTiles else "blue" if (row, lign) in self.waterTiles else self.colors[(lign%2+row%2)%2]
+                color = "red" if Vector2d(row, lign) in self.hitTiles else "blue" if Vector2d(row, lign) in self.waterTiles else self.colors[(lign%2+row%2)%2]
                 self.canvas.itemconfig(self.tiles[lign][row], fill=color)
                     
     def initBoard(self):
@@ -67,4 +62,4 @@ class ShootBoard:
             for row in range(self.boardSize):
                 x=row*self.caseSize
                 y=lign*self.caseSize
-                self.tiles[lign].append(self.canvas.create_rectangle(x,y,x+self.caseSize,y+self.caseSize))
+                self.tiles[lign].append(self.canvas.create_rectangle(x,y,x+self.caseSize,y+self.caseSize, fill="grey"))
