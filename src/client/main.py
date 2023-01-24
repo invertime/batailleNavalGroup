@@ -1,14 +1,36 @@
 import threading
 from classes.Window import Window
 from classes.Client import Client
+from classes.ServerConnectionWindow import ServerConnectionWindow
 
-
-host = "127.0.0.1"
-port = 6969
 boardSize = 10
 caseSize = 75
 
-client = Client(host, port)
+class Main:
+    def __init__(self, boardSize, caseSize, host=None,port=None) -> None:
+        self.host = host
+        self.port = port
+        self.boardSize = boardSize
+        self.caseSize = caseSize
+        self.serverSelected = False
+
+    def serverSelecter(self,h,p):
+        self.host = h
+        self.port = p
+        self.serverSelected = True
+
+
+main = Main(boardSize, caseSize)
+
+
+serverConnection = ServerConnectionWindow()
+
+serverConnection.create(main.serverSelecter)
+
+while not main.serverSelected:
+    pass
+
+client = Client(main.host, main.port)
 
 board = Window(boardSize, caseSize)
 
