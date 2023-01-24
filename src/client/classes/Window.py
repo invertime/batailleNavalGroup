@@ -31,11 +31,11 @@ class Window:
         self.placeBoard = PlaceBoard(self.boatCanvas, self.placeBoatGame, self.boardSize, self.caseSize, sendFunc)
         self.placeBoard.create()
        
-        SendBoatLocationButton = tk.Button(self.window, text="Send your boats location", command=lambda: sendFunc(self.placeBoard.boats) if not self.placeBoard.game.sizes else self.placeBoard._pass("you momma"))
-        SendBoatLocationButton.grid(row=1, column=0)
+        SendBoatLocationButton = tk.Button(self.window, text="Send your boats location", command=lambda: self.sendFuncHandler(sendFunc))
+        SendBoatLocationButton.grid(row=1, column=0, columnspan=2)
 
-        BoatGreyAllButton = tk.Button(self.window, text="Everything grey", command=self.switchToShootHandler)
-        BoatGreyAllButton.grid(row=1,column=1)
+        # BoatGreyAllButton = tk.Button(self.window, text="Everything grey", command=self.switchToShootHandler)
+        # BoatGreyAllButton.grid(row=1,column=1)
 
         self.shootGame = gameSexMechanicV2(missileFunc)
 
@@ -51,6 +51,15 @@ class Window:
         testLabel.grid(row=1, column=3)
 
         self.window.mainloop()
+
+    def sendFuncHandler(self, sendFunc):
+
+        if not self.placeBoard.game.sizes:
+            isSent = sendFunc(self.placeBoard.boats)
+            self.switchToShootHandler() if isSent else print("error while Shooting Boat")
+             
+        else:
+            self.placeBoard._pass("")
 
     def switchToShootHandler(self):
         shootModeEnabled = self.mainGameMechanics.switchToShoot()

@@ -15,6 +15,7 @@ class Client:
         self.sock.sendall(bytes("0" + str([boatCase]), "utf8"))
         data = self.sock.recv(1024)
         print(f"Received {data!r}")
+        return 1
 
     def sendMissile(self, position: tuple[int,int]) -> bool:
         self.sock.sendall(bytes("1" + str([position]), "utf8"))
