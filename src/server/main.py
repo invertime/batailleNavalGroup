@@ -1,4 +1,4 @@
-from classes.server import Server
+from classes.Server import Server
 from classes.Client import Client
 import threading
 import sys
@@ -14,7 +14,7 @@ clients = []
 connectedClient = 0
 
 while True:
-    if connectedClient < 100000:
+    if connectedClient < 1000:
         conn, addr = server.accept()
         connectedClient += 1
         print(connectedClient)

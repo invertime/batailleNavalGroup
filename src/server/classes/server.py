@@ -30,14 +30,56 @@ class Server:
 
             if command == 0:
                 print("Boats received: " + parsed)
-                client.boats  += list[list[tuple[int, int]]](parsed)
+                client.boats = dataArrayParser(data[1:])
                 conn.sendall(bytes(data, "utf8"))
             elif command == 1:
                 print("user shot at ", data[1:])
-                conn.sendall(b"1" if tuple[int, int](parsed) in client.boats else b"0")
+                flattenBoatList = [item for sublist in client.boats for item in sublist]
+                if dataTuppleParser(parsed) in flattenBoatList:
+                    print("Boat touched")
+                    conn.sendall(b"1")
+                else:
+                    print("Boat missed")
+                    conn.sendall(b"0")
             else:
                 conn.sendall(b"error processing data")
 
     def kickHandler(conn, addr):
         print(addr, "kicked")
         conn.sendall(b"noConnect")
+
+
+def dataArrayParser(byteStringArray):
+    byteStringArray = byteStringArray[2:-2]
+    arrayStart = False
+    tuppleStart = False
+    tuppleBuffer = []
+    tuppleArrayBuffer = []
+    finalArray = []
+    for i in byteStringArray:
+        if(i == '['):
+            arrayStart=True
+        elif (i == ']'):
+            arrayStart=False
+            finalArray.append(tuppleArrayBuffer)
+            tuppleArrayBuffer=[]
+        elif(i == '('):
+            tuppleStart=True
+        elif(i == ')'):
+            tuppleStart=False
+            tuppleArrayBuffer.append((tuppleBuffer[0],tuppleBuffer[1]))
+            tuppleBuffer=[]
+
+        elif(arrayStart):
+            if(tuppleStart):
+                if (i.isnumeric()):
+                    tuppleBuffer.append(int(i))
+
+    return finalArray
+
+def dataTuppleParser(byteStringTupple):
+    tuppleBuffer = []
+    for i in byteStringTupple:
+        if (i.isnumeric()):
+            tuppleBuffer.append(int(i))
+    return (tuppleBuffer[0],tuppleBuffer[1])
