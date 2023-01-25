@@ -1,7 +1,9 @@
 import threading
+import time
 from classes.Window import Window
 from classes.Client import Client
 from classes.ServerConnectionWindow import ServerConnectionWindow
+from classes.WaitWindow import WaitWindow
 
 boardSize = 10
 caseSize = 75
@@ -27,12 +29,14 @@ serverConnection = ServerConnectionWindow()
 
 serverConnection.create(main.serverSelecter)
 
-while not main.serverSelected:
-    pass
+
 
 client = Client(main.host, main.port)
-
 board = Window(boardSize, caseSize)
+waitWindow = WaitWindow()
 
 client.create()
-board.create(client.sendBoatLocation, client.sendMissile)
+
+waitWindow.create(client.waitOtherPlayerToConnect())
+
+board.create(client.sendBoatLocation, client.sendMissile, client.waitOtherPlayerToSendBoats)

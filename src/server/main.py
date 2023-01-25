@@ -9,18 +9,20 @@ server = Server(port)
 
 server.connect()
 
+clientsThreads = []
 clients = []
 
 connectedClient = 0
 
 while True:
-    if connectedClient < 1000:
+    if connectedClient < 2:
         conn, addr = server.accept()
         connectedClient += 1
         print(connectedClient)
-        client = Client([])
-        serverThread = threading.Thread(target=Server.connectionHandler, args=(conn, addr, client))
-        clients.append(serverThread)
+        client = Client(conn, addr, [])
+        clients.append(client)
+        serverThread = threading.Thread(target=Server.connectionHandler, args=(conn, addr, client, clients))
+        clientsThreads.append(serverThread)
         serverThread.start()
     else:
         conn, addr = server.accept()

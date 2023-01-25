@@ -16,7 +16,7 @@ class Window:
         self.caseSize = csize
         
 
-    def create(self, sendFunc, missileFunc):
+    def create(self, sendFunc, missileFunc, waitOtherPlayerToSendBoats):
         self.window = tk.Tk()
 
         self.alert = tk.StringVar()
@@ -31,7 +31,7 @@ class Window:
         self.placeBoard = PlaceBoard(self.boatCanvas, self.placeBoatGame, self.boardSize, self.caseSize, sendFunc)
         self.placeBoard.create()
        
-        SendBoatLocationButton = tk.Button(self.window, text="Send your boats location", command=lambda: self.sendFuncHandler(sendFunc))
+        SendBoatLocationButton = tk.Button(self.window, text="Send your boats location", command=lambda: self.sendFuncHandler(sendFunc, waitOtherPlayerToSendBoats))
         SendBoatLocationButton.grid(row=1, column=0, columnspan=2)
 
         # BoatGreyAllButton = tk.Button(self.window, text="Everything grey", command=self.switchToShootHandler)
@@ -52,11 +52,14 @@ class Window:
 
         self.window.mainloop()
 
-    def sendFuncHandler(self, sendFunc):
+    def sendFuncHandler(self, sendFunc, waitOtherPlayer):
 
         if not self.placeBoard.game.sizes:
-            isSent = sendFunc(self.placeBoard.boats)
-            self.switchToShootHandler() if isSent else print("error while Shooting Boat")
+            sendFunc(self.placeBoard.boats)
+            isSent = False
+            while not isSent:
+                isSent = waitOtherPlayer()
+            self.switchToShootHandler()
              
         else:
             self.placeBoard._pass("")
