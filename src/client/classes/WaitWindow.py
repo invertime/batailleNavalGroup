@@ -1,3 +1,4 @@
+import threading
 import tkinter as tk
 
 class WaitWindow:
@@ -11,12 +12,14 @@ class WaitWindow:
         self.waitOtherPlayerToConnect = waitOtherPlayerToConnect
         waiting = tk.Label(text="waiting the other player...")
         waiting.pack()
-        self.window.after(0, self.waitJob)
+        threading.Thread(target = self.waitJob).run()
         self.window.update()
 
     def waitJob(self):
-        waitCondition = self.waitOtherPlayerToConnect
+        # waitCondition = self.waitOtherPlayerToConnect()
+        # while not waitCondition:
+        #     print("waiting")
+        waitCondition = self.waitOtherPlayerToConnect()
         while not waitCondition:
-            print("waiting")
-        if(waitCondition):
-            self.window.destroy()
+            pass
+        self.window.destroy()

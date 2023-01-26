@@ -33,18 +33,23 @@ class ShootBoard:
 
         self.oldPreview = Vector2d(event.x // self.caseSize, event.y // self.caseSize)
 
-    def create(self):
-        self.enableControls()
+    def create(self, isFirst):
+        if (isFirst):
+            self.enableControls()
+        else:
+            threading.Thread(target=self.waitThenReturnControls).start()
+
         self.drawBoard()
 
     def clickToShoot(self, event):
         caseX, caseY = self.canvasToBoard((event.x, event.y))
 
-        if not Vector2d(caseX, caseY) in (self.hitTiles + self.waterTiles):
-            if self.game.TryShootAt(Vector2d(caseX, caseY)):
-                self.hitTiles.append(Vector2d(caseX, caseY))
+        v = Vector2d(caseX, caseY)
+        if not v in (self.hitTiles + self.waterTiles):
+            if self.game.TryShootAt(v):
+                self.hitTiles.append(v)
             else:
-                self.waterTiles.append(Vector2d(caseX, caseY))
+                self.waterTiles.append(v)
 
         self.drawBoard()
 

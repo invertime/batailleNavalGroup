@@ -5,6 +5,7 @@ from classes.PlaceBoard import PlaceBoard
 from classes.ShootBoard import ShootBoard
 from classes.Vector2d import Vector2d
 from classes.gamemachinemanagercontrollersextoyinputreceiver_itCanVibrateOfCourse import gameSex_sixenlatin_Mecanic_bytesManager, gameSexMechanicV2, MainGameMechanic
+import os
 
 class Window:
 
@@ -16,8 +17,9 @@ class Window:
         self.caseSize = csize
         
 
-    def create(self, sendFunc, missileFunc, waitFunc, waitOtherPlayerToSendBoats):
+    def create(self, sendBoatLocation, missileFunc, waitFunc, waitOtherPlayerToSendBoats):
         self.window = tk.Tk()
+        self.window.protocol("WM_DELETE_WINDOW", lambda: os.kill(os.getpid(), 9))
 
         self.alert = tk.StringVar()
         self.alert.set("AAAAH")
@@ -28,10 +30,10 @@ class Window:
 
         self.boatCanvas = tk.Canvas(self.window,width=self.caseSize*self.boardSize,height=self.caseSize*self.boardSize)
         self.boatCanvas.grid(row=0, column=0, columnspan=2)        
-        self.placeBoard = PlaceBoard(self.boatCanvas, self.placeBoatGame, self.boardSize, self.caseSize, sendFunc)
+        self.placeBoard = PlaceBoard(self.boatCanvas, self.placeBoatGame, self.boardSize, self.caseSize, sendBoatLocation)
         self.placeBoard.create()
        
-        SendBoatLocationButton = tk.Button(self.window, text="Send your boats location", command=lambda: self.sendFuncHandler(sendFunc, waitOtherPlayerToSendBoats))
+        SendBoatLocationButton = tk.Button(self.window, text="Send your boats location", command=lambda: self.sendFuncHandler(sendBoatLocation, waitOtherPlayerToSendBoats))
         SendBoatLocationButton.grid(row=1, column=0, columnspan=2)
 
         # BoatGreyAllButton = tk.Button(self.window, text="Everything grey", command=self.switchToShootHandler)
@@ -52,23 +54,19 @@ class Window:
 
         self.window.mainloop()
 
-    def sendFuncHandler(self, sendFunc, waitOtherPlayer):
-
+    def sendFuncHandler(self, sendBoatLocation, waitOtherPlayer):
         if not self.placeBoard.game.sizes:
-            sendFunc(self.placeBoard.boats)
-            isSent = False
-            while not isSent:
-                isSent = waitOtherPlayer()
-            self.switchToShootHandler()
-             
+            sendBoatLocation(self.placeBoard.boats)
+            id = waitOtherPlayer()
+            self.switchToShootHandler(id == 0)
         else:
-            self.placeBoard._pass("")
+            self.placeBoard._pass(None)
 
-    def switchToShootHandler(self):
+    def switchToShootHandler(self, isFirst: bool):
         shootModeEnabled = self.mainGameMechanics.switchToShoot()
         if shootModeEnabled and self.placeBoard.everyBoatsPlaced:
             self.placeBoard.greyAll()
-            self.shootBoard.create()
+            self.shootBoard.create(isFirst)
 
     def setAlert(self, message: str, timeOnDisplay: int):
         print(message)

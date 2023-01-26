@@ -21,22 +21,16 @@ class Main:
         self.port = p
         self.serverSelected = True
 
-
 main = Main(boardSize, caseSize)
 
-
 serverConnection = ServerConnectionWindow()
-
 serverConnection.create(main.serverSelecter)
 
-
-
 client = Client(main.host, main.port)
-board = Window(boardSize, caseSize)
-waitWindow = WaitWindow()
-
 clientThread = client.create()
 
-waitWindow.create(client.waitOtherPlayerToConnect())
+window = Window(boardSize, caseSize)
+window.create(client.sendBoatLocation, client.sendMissile, client.wait, client.waitOtherPlayerToSendBoats)
 
-board.create(client.sendBoatLocation, client.sendMissile, client.wait, client.waitOtherPlayerToSendBoats)
+waitWindow = WaitWindow()
+waitWindow.create(client.waitOtherPlayerToConnect)

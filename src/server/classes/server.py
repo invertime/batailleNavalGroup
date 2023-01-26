@@ -1,3 +1,4 @@
+import os
 import socket
 from classes.Client import Client
 
@@ -24,9 +25,17 @@ class Server:
         client.id = clients.index(client)
         print(f"Your id is: {client.id}")
         while True:
-            data: str = conn.recv(1024).decode("utf8")
-            if not data:
-                break
+            try:
+                data: str = conn.recv(1024).decode("utf8")
+            except:
+                if len(clients) == 2:
+                    if client.id == 0:
+                        clients[1].id = 0
+                        clients.pop(client.id)
+                    else:
+                        clients.pop(client.id)
+                else:
+                    os.kill(os.getpid(), 9)
 
             command = int(data[0])
             parsed = data[2:-1]
@@ -54,12 +63,12 @@ class Server:
                     pass
                 print(f"client{otherId} choose the placement of his/her boats")
                 clients[0].canShoot = True
-                conn.sendall(b"1")
+                conn.sendall(bytes(str(client.id), "utf8"))
             elif command == 3:
-                print(addr, " is wainting the other client...")
+                print(addr, " is waiting the other client...")
                 while len(clients) < 2:
                     pass
-                conn.sendall(bytes(client.id, "utf8"))
+                conn.sendall(b"1")
             elif command == 4:
                 otherId = 1 if client.id == 0 else 0
                 print(f"wait you morron ({client.pseudo})")

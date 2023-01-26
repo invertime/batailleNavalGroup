@@ -28,17 +28,15 @@ class Client:
         print("Testing if other client sent his boats...")
         self.sock.sendall(b"2")
         data = self.sock.recv(1024)
-        if data == b"1":
-            print(f"Player sent his boats")
 
-        return data == b"1"
+        print(f"your id: {int(data)}")
+
+        return int(data) # return the id of this player
 
     def waitOtherPlayerToConnect(self):
         print("Testing if other client is up...") 
         self.sock.sendall(b"3")
         data = self.sock.recv(1024)
-        if data == b"1":
-            print("Other client is up!") 
 
         return data == b"1"
     
