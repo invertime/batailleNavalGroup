@@ -35,8 +35,8 @@ client = Client(main.host, main.port)
 board = Window(boardSize, caseSize)
 waitWindow = WaitWindow()
 
-client.create()
+clientThread = client.create()
 
 waitWindow.create(client.waitOtherPlayerToConnect())
 
-board.create(client.sendBoatLocation, client.sendMissile, client.waitOtherPlayerToSendBoats)
+board.create(client.sendBoatLocation, client.sendMissile, client.wait, client.waitOtherPlayerToSendBoats)

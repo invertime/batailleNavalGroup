@@ -1,5 +1,6 @@
 import tkinter as tk
 import socket
+import threading
 from classes.Boat import Boat
 from classes.Vector2d import Vector2d
 from classes.gamemachinemanagercontrollersextoyinputreceiver_itCanVibrateOfCourse import gameSexMechanicV2, MainGameMechanic
@@ -33,8 +34,7 @@ class ShootBoard:
         self.oldPreview = Vector2d(event.x // self.caseSize, event.y // self.caseSize)
 
     def create(self):
-        self.canvas.bind("<Button-1>", self.clickToShoot)
-        self.canvas.bind("<Motion>", self.preview)
+        self.enableControls()
         self.drawBoard()
 
     def clickToShoot(self, event):
@@ -47,6 +47,24 @@ class ShootBoard:
                 self.waterTiles.append(Vector2d(caseX, caseY))
 
         self.drawBoard()
+
+        self.disableControls()
+        threading.Thread(target=self.waitThenReturnControls).start()
+
+    def waitThenReturnControls(self):
+        self.game.waitForTurn()
+        self.enableControls()
+
+    def _pass(self, e):
+        pass
+
+    def enableControls(self):
+        self.canvas.bind("<Button-1>", self.clickToShoot)
+        self.canvas.bind("<Motion>", self.preview)
+
+    def disableControls(self):
+        self.canvas.bind("<Button-1>", self._pass)
+        self.canvas.bind("<Motion>", self._pass)
 
     def drawBoard(self):
         for lign in range(self.boardSize):

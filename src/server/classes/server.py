@@ -39,6 +39,8 @@ class Server:
                 otherId = 1 if client.id == 0 else 0
                 print(f"user{client.id} shot at {data[1:]} to user{otherId}")
                 flattenBoatList = [item for sublist in clients[otherId].boats for item in sublist]
+                clients[0].toggleCanShoot()
+                clients[1].toggleCanShoot()
                 if dataTuppleParser(parsed) in flattenBoatList:
                     print("Boat touched")
                     conn.sendall(b"1")
@@ -51,12 +53,20 @@ class Server:
                 while not clients[otherId].boats:
                     pass
                 print(f"client{otherId} choose the placement of his/her boats")
+                clients[0].canShoot = True
                 conn.sendall(b"1")
             elif command == 3:
                 print(addr, " is wainting the other client...")
                 while len(clients) < 2:
                     pass
+                conn.sendall(bytes(client.id, "utf8"))
+            elif command == 4:
+                otherId = 1 if client.id == 0 else 0
+                print(f"wait you morron ({client.pseudo})")
+                while clients[otherId].canShoot:
+                    pass
                 conn.sendall(b"1")
+                print("ok gud")
             else:
                 conn.sendall(b"error processing data")
 

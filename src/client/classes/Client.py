@@ -10,12 +10,12 @@ class Client:
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.connect((self.HOST, self.PORT))
 
-    def sendBoatLocation(self,boatCase) -> None:
+    def sendBoatLocation(self,boatCase) -> bool:
         if not len(boatCase): return 
         self.sock.sendall(bytes("0" + str([boatCase]), "utf8"))
         data = self.sock.recv(1024)
         print(f"Received {data!r}")
-        return 1
+        return data == b"0"
 
     def sendMissile(self, position: tuple[int,int]) -> bool:
         self.sock.sendall(bytes("1" + str([position]), "utf8"))
@@ -42,3 +42,8 @@ class Client:
 
         return data == b"1"
     
+    def wait(self):
+        print("waiting for turn...")
+        self.sock.sendall(b"4")
+        self.sock.recv(1024)
+        print("u turn !")

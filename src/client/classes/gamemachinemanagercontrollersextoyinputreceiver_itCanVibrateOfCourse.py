@@ -42,11 +42,15 @@ class gameSex_sixenlatin_Mecanic_bytesManager:
             self.dir = Vector2d(0, 1)
 
 class gameSexMechanicV2:
-    def __init__(self, shootCommand) -> None:
+    def __init__(self, shootCommand, waitCommand) -> None:
         self.sendShootCommand: function[tuple[int, int], bool] = shootCommand
+        self.waitCommand: function = waitCommand
 
     def TryShootAt(self, pos:Vector2d) -> bool:
         return self.sendShootCommand(pos.getTupple())
+
+    def waitForTurn(self):
+        self.waitCommand()
 
 class MainGameMechanic:
     __shootModeEnable = False

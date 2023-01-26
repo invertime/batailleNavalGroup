@@ -19,7 +19,7 @@ while True:
         conn, addr = server.accept()
         connectedClient += 1
         print(connectedClient)
-        client = Client(conn, addr, [])
+        client = Client(conn, addr, addr, [])
         clients.append(client)
         serverThread = threading.Thread(target=Server.connectionHandler, args=(conn, addr, client, clients))
         clientsThreads.append(serverThread)
