@@ -1,10 +1,11 @@
 class Client:
-    boats: list[tuple[int, int]] = None
+    boats: list[list[tuple[int,int]]] = None
     conn,addr = None, None
     pseudo: str
     isReady:bool = False
     id = None
     canShoot = False
+    touchedCases: list[list[tuple[int,int]]] = []
 
     def __init__(self, conn, addr, pseudo, boats: list[tuple[int, int]]) -> None:
         self.conn = conn

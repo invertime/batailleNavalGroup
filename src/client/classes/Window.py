@@ -17,7 +17,7 @@ class Window:
         self.caseSize = csize
         
 
-    def create(self, sendBoatLocation, missileFunc, waitFunc, waitOtherPlayerToSendBoats):
+    def create(self, sendBoatLocation, sendMissile, waitFunc, waitOtherPlayerToSendBoats):
         self.window = tk.Tk()
         self.window.protocol("WM_DELETE_WINDOW", lambda: os.kill(os.getpid(), 9))
 
@@ -39,7 +39,7 @@ class Window:
         # BoatGreyAllButton = tk.Button(self.window, text="Everything grey", command=self.switchToShootHandler)
         # BoatGreyAllButton.grid(row=1,column=1)
 
-        self.shootGame = gameSexMechanicV2(missileFunc, waitFunc)
+        self.shootGame = gameSexMechanicV2(sendMissile, waitFunc)
 
         self.missileCanvas = tk.Canvas(self.window,width=self.caseSize*self.boardSize,height=self.caseSize*self.boardSize)
         self.missileCanvas.grid(row=0, column=2, columnspan=2) 

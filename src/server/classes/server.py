@@ -44,6 +44,7 @@ class Server:
                 print("Boats received: " + parsed)
                 client.boats = dataArrayParser(data[1:])
                 conn.sendall(bytes(data, "utf8"))
+
             elif command == 1:
                 otherId = 1 if client.id == 0 else 0
                 print(f"user{client.id} shot at {data[1:]} to user{otherId}")
@@ -51,11 +52,34 @@ class Server:
                 clients[0].toggleCanShoot()
                 clients[1].toggleCanShoot()
                 if dataTuppleParser(parsed) in flattenBoatList:
+                    boatDestroyed = -1
+                    for i in clients[otherId].boats:
+                        print(f"i={i}")
+                        if len(i) == 0:
+                            print("a boat as been destroyed")
+                            for j in clients[otherId].touchedCases:
+                                print(j, clients[otherId].boats, i)
+                                if j[0] == clients[otherId].boats.index(i):
+                                    boatDestroyed = j[1:]
+                            clients[otherId].boats.remove(i)
+                            break
+                        elif dataTuppleParser(parsed) in i:
+                            print(f"touched boats: {clients[otherId].touchedCases}")
+                            if i not in clients[otherId].touchedCases:
+                                # clients[otherId].touchedCases.append(clients[otherId].boats.index(i))
+                                print("new boat touched")
+                                newI = i
+                                newI.insert(0,clients[otherId].boats.index(i))
+                                clients[otherId].touchedCases.append(i)
+                            i.remove(dataTuppleParser(parsed))
+                            
+                                                        
                     print("Boat touched")
-                    conn.sendall(b"1")
+                    conn.sendall(bytes(str((1,boatDestroyed)), "utf8"))
                 else:
                     print("Boat missed")
-                    conn.sendall(b"0")
+                    conn.sendall(b"(0,0)")
+
             elif command == 2:
                 otherId = 1 if client.id == 0 else 0
                 print(addr, " want to know if the other player sent is boats...")
@@ -64,11 +88,13 @@ class Server:
                 print(f"client{otherId} choose the placement of his/her boats")
                 clients[0].canShoot = True
                 conn.sendall(bytes(str(client.id), "utf8"))
+
             elif command == 3:
                 print(addr, " is waiting the other client...")
                 while len(clients) < 2:
                     pass
                 conn.sendall(b"1")
+
             elif command == 4:
                 otherId = 1 if client.id == 0 else 0
                 print(f"wait you morron ({client.pseudo})")
@@ -76,6 +102,7 @@ class Server:
                     pass
                 conn.sendall(b"1")
                 print("ok gud")
+
             else:
                 conn.sendall(b"error processing data")
 

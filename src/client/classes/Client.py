@@ -22,7 +22,11 @@ class Client:
         data = self.sock.recv(1024)
         print(f"Received {data!r}")
 
-        return data == b"1"
+        parsedData: tuple[int,int] = dataTuppleParser(data)
+
+        print("touched: ",parsedData[0],"boat destroyed", parsedData[1])
+
+        return parsedData
 
     def waitOtherPlayerToSendBoats(self):
         print("Testing if other client sent his boats...")
@@ -45,3 +49,37 @@ class Client:
         self.sock.sendall(b"4")
         self.sock.recv(1024)
         print("u turn !")
+
+
+def dataTuppleParser(byteStringTupple):
+    stringTuple: str = byteStringTupple.decode("utf8")
+    stringTuple = stringTuple.replace(" ", "")
+    tuppleBuffer = []
+    finalArray = []
+    tuppleStart = False
+
+    for i in stringTuple:
+        if i == "(":
+            tuppleStart = True
+        elif i == ")":
+            finalArray.append(tuppleBuffer)
+            tuppleStart = False
+        elif tuppleStart:
+            if i == ",":
+                if len(tuppleBuffer) == 1:
+                    finalArray.append(tuppleBuffer[0])
+                else:
+                    finalArray.append(tuppleBuffer)
+                tuppleBuffer = []
+            else:
+                if i.isnumeric():
+                    tuppleBuffer.append(int(i))
+                else:
+                    tuppleBuffer.append(i)
+        else:
+            pass
+
+        # if (type(i) == int or i.isnumeric()):
+        #     tuppleBuffer.append(int(i))
+    print(finalArray)
+    return (finalArray[0],finalArray[1])

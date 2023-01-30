@@ -42,12 +42,12 @@ class gameSex_sixenlatin_Mecanic_bytesManager:
             self.dir = Vector2d(0, 1)
 
 class gameSexMechanicV2:
-    def __init__(self, shootCommand, waitCommand) -> None:
-        self.sendShootCommand: function[tuple[int, int], bool] = shootCommand
+    def __init__(self, sendMissile, waitCommand) -> None:
+        self.sendMissile: function[tuple[int, int], bool] = sendMissile
         self.waitCommand: function = waitCommand
 
     def TryShootAt(self, pos:Vector2d) -> bool:
-        return self.sendShootCommand(pos.getTupple())
+        return self.sendMissile(pos.getTupple())
 
     def waitForTurn(self):
         self.waitCommand()

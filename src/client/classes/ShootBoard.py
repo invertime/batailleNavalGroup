@@ -46,7 +46,7 @@ class ShootBoard:
 
         v = Vector2d(caseX, caseY)
         if not v in (self.hitTiles + self.waterTiles):
-            if self.game.TryShootAt(v):
+            if self.game.TryShootAt(v)[0]:
                 self.hitTiles.append(v)
             else:
                 self.waterTiles.append(v)
