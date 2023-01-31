@@ -1,4 +1,5 @@
 import socket
+from classes.Vector2d import Vector2d
 
 
 class Client:
@@ -17,14 +18,14 @@ class Client:
         print(f"Received {data!r}")
         return data == b"0"
 
-    def sendMissile(self, position: tuple[int,int]) -> bool:
+    def sendMissile(self, position: tuple[int,int]) -> tuple[int, int|list[Vector2d]]:
         self.sock.sendall(bytes("1" + str([position]), "utf8"))
         data = self.sock.recv(1024)
         print(f"Received {data!r}")
 
         parsedData: tuple[int,int] = dataTuppleParser(data)
 
-        print("touched: ",parsedData[0],"boat destroyed", parsedData[1])
+        print("touched: ",parsedData[0],"boat destroyed:", parsedData == 0)
 
         return parsedData
 
@@ -57,15 +58,24 @@ def dataTuppleParser(byteStringTupple):
     tuppleBuffer = []
     finalArray = []
     tuppleStart = False
+    arrayStart = False
 
     for i in stringTuple:
         if i == "(":
             tuppleStart = True
         elif i == ")":
-            finalArray.append(tuppleBuffer)
+            finalArray.append(tuppleBuffer[0]) if len(tuppleBuffer) == 1 else finalArray.append(tuppleBuffer)
             tuppleStart = False
         elif tuppleStart:
-            if i == ",":
+            if i=="[":
+                arrayStart = True
+                start = stringTuple.index(i)
+                end = stringTuple.index("]")
+                tuppleBuffer.append(dataArrayParser(stringTuple[start: end+1]))
+            elif arrayStart:
+                if i=="]":
+                    arrayStart = False
+            elif i == ",":
                 if len(tuppleBuffer) == 1:
                     finalArray.append(tuppleBuffer[0])
                 else:
@@ -76,10 +86,31 @@ def dataTuppleParser(byteStringTupple):
                     tuppleBuffer.append(int(i))
                 else:
                     tuppleBuffer.append(i)
-        else:
-            pass
 
         # if (type(i) == int or i.isnumeric()):
         #     tuppleBuffer.append(int(i))
-    print(finalArray)
     return (finalArray[0],finalArray[1])
+
+def dataArrayParser(byteStringArray):
+
+    startArray = False
+    startVector2D = False
+    vector2dBuffer = []
+    finalArray = []
+
+    for i in byteStringArray:
+        if i == "[":
+            startArray = True
+        elif i == "]":
+            startArray = False
+        elif startArray:
+            if i == "(":
+                startVector2D = True
+            elif i == ")":
+                startVector2D = False
+                finalArray.append(Vector2d(vector2dBuffer[0],vector2dBuffer[1]))
+            elif startVector2D:
+                if i.isnumeric():
+                    vector2dBuffer.append(int(i))
+
+    return finalArray

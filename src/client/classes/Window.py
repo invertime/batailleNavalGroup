@@ -9,7 +9,7 @@ import os
 
 class Window:
 
-    window, boatCanvas, missileCanvas, placeBoatGame, shootGame, alert = None, None, None, None, None, None
+    window, boatCanvas, missileCanvas, placeBoatGame, shootGame, boatKilledCounterWrapper, boatKilledCounter = None, None, None, None, None, None, None
     tiles: list[list[int]]    
 
     def __init__(self, bsize, csize):
@@ -21,8 +21,13 @@ class Window:
         self.window = tk.Tk()
         self.window.protocol("WM_DELETE_WINDOW", lambda: os.kill(os.getpid(), 9))
 
-        self.alert = tk.StringVar()
-        self.alert.set("AAAAH")
+        self.boatKilledCounter = tk.IntVar()
+        self.boatKilledCounter.set(0)
+
+        self.boatKilledCounterWrapper = tk.StringVar()
+        self.boatKilledCounterWrapper.set("Boat killed:"+str(self.boatKilledCounter.get()))
+
+        self.boatKilledCounter.trace('w', self.setboatKilledCounterWrapperReactivity)
 
         self.mainGameMechanics = MainGameMechanic()
 
@@ -43,14 +48,11 @@ class Window:
 
         self.missileCanvas = tk.Canvas(self.window,width=self.caseSize*self.boardSize,height=self.caseSize*self.boardSize)
         self.missileCanvas.grid(row=0, column=2, columnspan=2) 
-        self.shootBoard = ShootBoard(self.missileCanvas, self.shootGame, self.boardSize, self.caseSize)
+        self.shootBoard = ShootBoard(self.missileCanvas, self.shootGame, self.boardSize, self.caseSize, self.boatKilledCounter)
         self.shootBoard.initBoard()
 
-        testButton = tk.Button(self.window, text="Click Me!", command=lambda: self.setAlert("test", 1))
-        testButton.grid(row=1, column=2)
-
-        testLabel = tk.Label(self.window, textvariable=self.alert, fg="black")
-        testLabel.grid(row=1, column=3)
+        boatKilledLabel = tk.Label(self.window, textvariable=self.boatKilledCounterWrapper, fg="black")
+        boatKilledLabel.grid(row=1, column=3)
 
         self.window.mainloop()
 
@@ -79,3 +81,6 @@ class Window:
 
     def wait(self, waitDuration):
         time.sleep(waitDuration)
+
+    def  setboatKilledCounterWrapperReactivity(self, var, index, mode):
+        self.boatKilledCounterWrapper.set("Boat killed:"+str(self.boatKilledCounter.get()))

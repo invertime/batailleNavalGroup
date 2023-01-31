@@ -52,29 +52,17 @@ class Server:
                 clients[0].toggleCanShoot()
                 clients[1].toggleCanShoot()
                 if dataTuppleParser(parsed) in flattenBoatList:
-                    boatDestroyed = -1
+                    boatDestroyed = 0
+                    clients[otherId].touchedCases.append(dataTuppleParser(parsed))
                     for i in clients[otherId].boats:
-                        print(f"i={i}")
-                        if len(i) == 0:
-                            print("a boat as been destroyed")
-                            for j in clients[otherId].touchedCases:
-                                print(j, clients[otherId].boats, i)
-                                if j[0] == clients[otherId].boats.index(i):
-                                    boatDestroyed = j[1:]
+                        if set(i).issubset(clients[otherId].touchedCases):
+                            boatDestroyed = i
                             clients[otherId].boats.remove(i)
-                            break
-                        elif dataTuppleParser(parsed) in i:
-                            print(f"touched boats: {clients[otherId].touchedCases}")
-                            if i not in clients[otherId].touchedCases:
-                                # clients[otherId].touchedCases.append(clients[otherId].boats.index(i))
-                                print("new boat touched")
-                                newI = i
-                                newI.insert(0,clients[otherId].boats.index(i))
-                                clients[otherId].touchedCases.append(i)
-                            i.remove(dataTuppleParser(parsed))
-                            
-                                                        
-                    print("Boat touched")
+                            if not len(clients[otherId].boats):
+                                boatDestroyed = 1
+                                print(f"user{client.id} won!")
+
+                    print(f"Boat touched: {boatDestroyed}")
                     conn.sendall(bytes(str((1,boatDestroyed)), "utf8"))
                 else:
                     print("Boat missed")

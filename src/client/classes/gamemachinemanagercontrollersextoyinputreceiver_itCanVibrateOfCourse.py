@@ -46,7 +46,7 @@ class gameSexMechanicV2:
         self.sendMissile: function[tuple[int, int], bool] = sendMissile
         self.waitCommand: function = waitCommand
 
-    def TryShootAt(self, pos:Vector2d) -> bool:
+    def TryShootAt(self, pos:Vector2d) -> tuple[int, int|list[Vector2d]]:
         return self.sendMissile(pos.getTupple())
 
     def waitForTurn(self):

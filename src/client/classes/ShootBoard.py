@@ -13,13 +13,14 @@ class ShootBoard:
     oldPreview: Vector2d
     tiles: list[list[int]]
  
-    def __init__(self, canvas, game, bSize, cSize):
+    def __init__(self, canvas, game, bSize, cSize, boatKilledCounter: tk.IntVar):
         self.canvas = canvas
         self.game = game
         self.boardSize: int = bSize
         self.caseSize: int = cSize
         self.tiles = []
         self.colors: list[str] = ["white","black"]
+        self.boatKilledCounter = boatKilledCounter
 
     def canvasToBoard(self, pos: tuple[int, int]) -> tuple[int, int]:
         return pos[0] //self.caseSize, pos[1] //self.caseSize
@@ -46,8 +47,11 @@ class ShootBoard:
 
         v = Vector2d(caseX, caseY)
         if not v in (self.hitTiles + self.waterTiles):
-            if self.game.TryShootAt(v)[0]:
+            tryShootResponse = self.game.TryShootAt(v)
+            if tryShootResponse[0]:
                 self.hitTiles.append(v)
+                if tryShootResponse[1]:
+                    self.boatKilledCounter.set(self.boatKilledCounter.get() + 1)
             else:
                 self.waterTiles.append(v)
 
