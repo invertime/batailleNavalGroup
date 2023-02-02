@@ -48,8 +48,12 @@ class Window:
 
         self.missileCanvas = tk.Canvas(self.window,width=self.caseSize*self.boardSize,height=self.caseSize*self.boardSize)
         self.missileCanvas.grid(row=0, column=2, columnspan=2) 
+
         self.shootBoard = ShootBoard(self.missileCanvas, self.shootGame, self.boardSize, self.caseSize, self.boatKilledCounter)
         self.shootBoard.initBoard()
+        
+        SendBoatLocationButton = tk.Button(self.window, text="dont click if ur not a dev", command=self.shootBoard.Nuke)
+        SendBoatLocationButton.grid(row=1, column=2)
 
         boatKilledLabel = tk.Label(self.window, textvariable=self.boatKilledCounterWrapper, fg="black")
         boatKilledLabel.grid(row=1, column=3)
@@ -82,5 +86,5 @@ class Window:
     def wait(self, waitDuration):
         time.sleep(waitDuration)
 
-    def  setboatKilledCounterWrapperReactivity(self, var, index, mode):
+    def setboatKilledCounterWrapperReactivity(self, var, index, mode):
         self.boatKilledCounterWrapper.set("Boat killed:"+str(self.boatKilledCounter.get()))

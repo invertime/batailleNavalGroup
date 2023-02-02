@@ -53,17 +53,19 @@ class Server:
                 clients[1].toggleCanShoot()
                 if dataTuppleParser(parsed) in flattenBoatList:
                     boatDestroyed = 0
+                    firstInt = 1
                     clients[otherId].touchedCases.append(dataTuppleParser(parsed))
                     for i in clients[otherId].boats:
                         if set(i).issubset(clients[otherId].touchedCases):
                             boatDestroyed = i
                             clients[otherId].boats.remove(i)
                             if not len(clients[otherId].boats):
-                                boatDestroyed = 1
+                                firstInt = 2
                                 print(f"user{client.id} won!")
+                                client.win = True
 
                     print(f"Boat touched: {boatDestroyed}")
-                    conn.sendall(bytes(str((1,boatDestroyed)), "utf8"))
+                    conn.sendall(bytes(str((firstInt,boatDestroyed)), "utf8"))
                 else:
                     print("Boat missed")
                     conn.sendall(b"(0,0)")
@@ -88,7 +90,10 @@ class Server:
                 print(f"wait you morron ({client.pseudo})")
                 while clients[otherId].canShoot:
                     pass
-                conn.sendall(b"1")
+                if clients[otherId].win:
+                    conn.sendall(b"2")
+                else:
+                    conn.sendall(b"1")
                 print("ok gud")
 
             else:

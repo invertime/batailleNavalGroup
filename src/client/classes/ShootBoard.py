@@ -12,6 +12,7 @@ class ShootBoard:
     waterTiles: list[Vector2d] = []
     oldPreview: Vector2d
     tiles: list[list[int]]
+    killedBoatsCases: list[Vector2d] = []
  
     def __init__(self, canvas, game, bSize, cSize, boatKilledCounter: tk.IntVar):
         self.canvas = canvas
@@ -50,8 +51,16 @@ class ShootBoard:
             tryShootResponse = self.game.TryShootAt(v)
             if tryShootResponse[0]:
                 self.hitTiles.append(v)
-                if tryShootResponse[1]:
+                if tryShootResponse[1] != 0:
+                    print(tryShootResponse[1])
+                    self.killedBoatsCases += tryShootResponse[1]
+                    print(self.killedBoatsCases)
                     self.boatKilledCounter.set(self.boatKilledCounter.get() + 1)
+                if tryShootResponse[0] == 2:
+                    self.disableControls()
+                    self.drawBoard()
+                    self.drawWinBoard()
+                    return
             else:
                 self.waterTiles.append(v)
 
@@ -61,8 +70,35 @@ class ShootBoard:
         threading.Thread(target=self.waitThenReturnControls).start()
 
     def waitThenReturnControls(self):
-        self.game.waitForTurn()
-        self.enableControls()
+        if not self.game.waitForTurn():
+            self.enableControls()
+        else:
+            self.drawLoseBoard()
+
+    def Nuke(self):
+        self.disableControls()
+
+        dontShootThere = self.hitTiles + self.waterTiles
+        for x in range(10):
+            for y in range(10):
+                v = Vector2d(x, y)
+                if not v in dontShootThere:
+                    tryShootResponse = self.game.TryShootAt(v)
+                    if tryShootResponse[0]:
+                        self.hitTiles.append(v)
+                        if tryShootResponse[1] != 0:
+                            self.killedBoatsCases += tryShootResponse[1]
+                            self.boatKilledCounter.set(self.boatKilledCounter.get() + 1)
+                    else:
+                        self.waterTiles.append(v)
+
+                self.drawBoard()
+
+                # wait for next turn
+                if self.game.waitForTurn():
+                    self.drawLoseBoard()
+
+        self.drawWinBoard()
 
     def _pass(self, e):
         pass
@@ -78,8 +114,47 @@ class ShootBoard:
     def drawBoard(self):
         for lign in range(self.boardSize):
             for row in range(self.boardSize):
-                color = "red" if Vector2d(row, lign) in self.hitTiles else "blue" if Vector2d(row, lign) in self.waterTiles else self.colors[(lign%2+row%2)%2]
+                v = Vector2d(row, lign)
+                color = "brown" if v in self.killedBoatsCases else "red" if v in self.hitTiles else "blue" if v in self.waterTiles else self.colors[(lign%2+row%2)%2]
                 self.canvas.itemconfig(self.tiles[lign][row], fill=color)
+
+    def drawWinBoard(self):
+        self.drawPicture([
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 1, 1, 1, 1, 0, 0, 0],
+            [0, 0, 1, 1, 1, 1, 1, 1, 0, 0],
+            [0, 2, 2, 2, 2, 1, 1, 1, 1, 0],
+            [0, 2, 2, 2, 2, 1, 1, 1, 1, 0],
+            [0, 2, 2, 2, 2, 1, 1, 1, 1, 0],
+            [0, 0, 1, 1, 1, 1, 1, 1, 1, 0],
+            [0, 0, 1, 1, 1, 1, 1, 1, 0, 0],
+            [0, 0, 1, 1, 0, 0, 1, 1, 0, 0],
+            [0, 0, 1, 1, 0, 0, 1, 1, 0, 0]
+        ])
+
+    def drawLoseBoard(self):
+        a = [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 1, 1, 1, 1, 0, 0, 0],
+            [0, 0, 1, 1, 1, 1, 1, 1, 0, 0],
+            [0, 2, 2, 2, 2, 1, 1, 1, 1, 0],
+            [0, 2, 2, 2, 2, 1, 1, 1, 1, 0],
+            [0, 2, 2, 2, 2, 1, 1, 1, 1, 0],
+            [0, 0, 1, 1, 1, 1, 1, 1, 1, 0],
+            [0, 0, 1, 1, 1, 1, 1, 1, 0, 0],
+            [0, 0, 1, 1, 0, 0, 1, 1, 0, 0],
+            [0, 0, 1, 1, 0, 0, 1, 1, 0, 0]
+        ]
+        a.reverse()
+        self.drawPicture(a)
+
+    def drawPicture(self, drawing):
+        colors = ["", "red", "cyan"]
+        for lign in range(self.boardSize):
+            for row in range(self.boardSize):
+                color = colors[drawing[lign][row]]
+                if color != "":
+                    self.canvas.itemconfig(self.tiles[lign][row], fill=color)
                     
     def initBoard(self):
         for lign in range(self.boardSize):

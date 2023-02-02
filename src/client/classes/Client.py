@@ -23,7 +23,7 @@ class Client:
         data = self.sock.recv(1024)
         print(f"Received {data!r}")
 
-        parsedData: tuple[int,int] = dataTuppleParser(data)
+        parsedData: tuple[int,int | list[list[Vector2d]]] = dataTuppleParser(data)
 
         print("touched: ",parsedData[0],"boat destroyed:", parsedData == 0)
 
@@ -47,9 +47,10 @@ class Client:
     
     def wait(self):
         print("waiting for turn...")
-        self.sock.sendall(b"4")
-        self.sock.recv(1024)
-        print("u turn !")
+        data = self.sock.sendall(b"4")
+        data = self.sock.recv(1024)
+        print("other as won (you bad)" if data == 2 else "you turn")
+        return data == 1
 
 
 def dataTuppleParser(byteStringTupple):
@@ -109,6 +110,7 @@ def dataArrayParser(byteStringArray):
             elif i == ")":
                 startVector2D = False
                 finalArray.append(Vector2d(vector2dBuffer[0],vector2dBuffer[1]))
+                vector2dBuffer.clear()
             elif startVector2D:
                 if i.isnumeric():
                     vector2dBuffer.append(int(i))

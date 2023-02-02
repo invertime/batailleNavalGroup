@@ -6,6 +6,7 @@ class Client:
     id = None
     canShoot = False
     touchedCases: list[list[tuple[int,int]]] = []
+    win = False
 
     def __init__(self, conn, addr, pseudo, boats: list[tuple[int, int]]) -> None:
         self.conn = conn

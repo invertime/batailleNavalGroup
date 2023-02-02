@@ -50,7 +50,7 @@ class gameSexMechanicV2:
         return self.sendMissile(pos.getTupple())
 
     def waitForTurn(self):
-        self.waitCommand()
+        return self.waitCommand()
 
 class MainGameMechanic:
     __shootModeEnable = False
